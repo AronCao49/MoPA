@@ -49,6 +49,7 @@ Specifically, VGI insert more ROs from the wild with ground truth to guide the r
 We greatly appreciate the contributions of the following public repos:
 - [torchsparse](https://github.com/mit-han-lab/torchsparse)
 - [SPVNAS](https://github.com/mit-han-lab/spvnas)
+- [SalsaNext](https://github.com/TiagoCortinhal/SalsaNext)
 - [Patchwork++](https://github.com/url-kaist/patchwork-plusplus)
 - [xMUDA](https://github.com/valeoai/xmuda)
 
