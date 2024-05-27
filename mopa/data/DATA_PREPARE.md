@@ -27,7 +27,7 @@ $ python mopa/data/semantic_kitti/preprocess.py
 ```
 
 ## 4. Rare Objects (ROs) from the wild
-As mentioned in our paper, MoPA mainly leverage labeled instance from the Waymo dataset to imporve segmentation on ROs. To extract those labeled instance, first download the raw dataset from [the official website](https://waymo.com/open/) of Waymo dataset and decompress them in the same folder (you can download the training split only). You now should have a dataset folder organized as follows:
+As mentioned in our paper, MoPA mainly leverage labeled instance from the Waymo dataset to imporve segmentation on ROs. To extract those labeled instance, first download the raw dataset from [the official website](https://waymo.com/open/) of Waymo dataset (specifically, we utilize the training split of v1.3.0) and decompress them in the same folder. You now should have a dataset folder organized as follows:
 
 📦Waymo <br> 
 ┣ 📂training <br>
