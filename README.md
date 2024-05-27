@@ -30,8 +30,29 @@ Specifically, VGI insert more ROs from the wild with ground truth to guide the r
   <img src="figs/SAM_consistency.jpg" width="600" />
 </p>
 
-## :eyes: Updates
+## Installation and Prerequistie
 
+### 1. Installation
+To ease the effort during environment setup, we recommand you to leverage [Docker](https://www.docker.com/) and [NVIDIA Container Toolkit](https://docs.nvidia.com/ai-enterprise/deployment-guide-vmware/0.1.0/docker.html). With Docker installed, you can either locally build the docker image for MoPA using [this Dockerfile](docker/Dockerfile) by running ```docker build -t mopa docker/ ```, or pull our pre-built image from Dockerhub by ```docker pull aroncao49/mopa:latest```.
+
+You can then run a container using the docker image. Before running our code in the container, some prerequisties are needed to be installed. To do so, go to this repo folder and run ```bash install.sh```.
+
+Remarks: you may ignore the ERROR warning saying werkzeug version is not compatible with open3d.
+
+### 2. Patchwork++
+To install [Patchwork++](https://github.com/url-kaist/patchwork-plusplus) for ground identification, follow the below command:
+```bash
+# Make sure you are in this repo folder
+$ mkdir mopa/third_party && cd mopa/third_party
+$ git clone https://github.com/url-kaist/patchwork-plusplus
+$ cd patchwork-plusplus && pip install .
+```
+
+## Dataset Prepatation
+Please refer to [DATA_PREPARE.md](mopa/data/DATA_PREPARE.md) for the data preparation and pre-processing details.
+
+## :eyes: Updates
+* [2024.05] Release installation, prerequisite details, and data preparation procedures.
 * [2024.03] We are now refactoring our code and evaluating its feasibility. Code will be available shortly. 
 * [2024.01] Our paper is accepted by ICRA 2024! Check our paper on arxiv [here][Paperlink].
 
@@ -39,8 +60,8 @@ Specifically, VGI insert more ROs from the wild with ground truth to guide the r
 ## :writing_hand: TODO List
 
 - [x] Initial release. :rocket:
-- [ ] Add installation and prerequisite details.
-- [ ] Add data preparation details.
+- [x] Add installation and prerequisite details.
+- [x] Add data preparation details.
 - [ ] Add training details.
 - [ ] Add evaluation details.
 
