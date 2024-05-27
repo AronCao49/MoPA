@@ -1,0 +1,3 @@
+open3d
+tqdm
+waymo-open-dataset-tf-2-12-0 == 1.6.4
