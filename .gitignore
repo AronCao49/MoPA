@@ -175,5 +175,10 @@ mopa/third_party/patchwork-plusplus
 mopa/third_party/patchwork-plusplus/build
 mopa/third_party/patchwork-plusplus/build/*
 
-# vscode related file
+# checkpoints
+mopa/exp
+mopa/exp/*
+
+# Others
 .vscode/*
+.DS_Store
