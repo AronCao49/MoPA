@@ -30,8 +30,7 @@ def validate(cfg,
              val_metric_logger,
              logger,
              pselab_dir=None,
-             mix_match=False,
-             entropy_fuse=False):
+             mix_match=False):
     logger.info('Validation')
 
     # evaluator
@@ -41,7 +40,6 @@ def validate(cfg,
     evaluator_3d_all = Evaluator(class_names) if "RANGE" in cfg.DATASET_TARGET.TYPE \
                                                       else None
     evaluator_ensemble = Evaluator(class_names) if model_3d else None
-    evaluator_ety = Evaluator(class_names) if entropy_fuse else None
     pselab_data_list = []
 
     # initialize KNN
@@ -50,7 +48,11 @@ def validate(cfg,
         post_knn = post_knn.cuda()
     else:
         post_knn = None
-
+        
+    val_metric_logger.remove("seg_iou_2d")
+    val_metric_logger.remove("seg_iou_3d")
+    val_metric_logger.remove("seg_iou_xM")
+    
     end = time.time()
     with torch.no_grad():
         for iteration, data_batch in enumerate(dataloader):
@@ -153,9 +155,6 @@ def validate(cfg,
                 if model_3d:
                     evaluator_3d.update(pred_label_3d, curr_seg_label)
                     evaluator_ensemble.update(pred_label_ensemble, curr_seg_label)
-                    if entropy_fuse:
-                        evaluator_ety.update(pred_label_e_ensemble, curr_seg_label)
-
 
                 if pselab_dir is not None:
                     assert np.all(pred_label_2d >= 0)
@@ -219,8 +218,6 @@ def validate(cfg,
             eval_list.extend([('3D', evaluator_3d), ('2D+3D', evaluator_ensemble)])
             if evaluator_3d_all:
                 eval_list.extend([('3D_all', evaluator_3d_all)])
-            if entropy_fuse:
-                eval_list.extend([('entropy fuse', evaluator_ety)])
         
         eval_dict = {}
         for modality, evaluator in eval_list:

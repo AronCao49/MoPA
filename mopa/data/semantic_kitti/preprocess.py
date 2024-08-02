@@ -198,7 +198,6 @@ def get_kitti_ground(root_dir: str, save_dir: str):
     # Init PatchWork++
     params = pypatchworkpp.Parameters()
     params.verbose = False
-    params.enable_RNR = False
     PatchworkPP = pypatchworkpp.patchworkpp(params)
     
     # Loop over all sequence
@@ -229,7 +228,7 @@ def get_kitti_ground(root_dir: str, save_dir: str):
 if __name__ == '__main__':
     root_dir = 'mopa/datasets/semantic_kitti'
     out_dir = 'mopa/datasets/semantic_kitti'
-    # preprocess('val', root_dir, out_dir)
-    # preprocess('train', root_dir, out_dir)
-    # preprocess('test', root_dir, out_dir)
+    preprocess('val', root_dir, out_dir)
+    preprocess('train', root_dir, out_dir)
+    preprocess('test', root_dir, out_dir)
     get_kitti_ground("mopa/datasets/semantic_kitti", "g_indices")

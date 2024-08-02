@@ -1,12 +1,11 @@
 import os
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 import tensorflow.compat.v1 as tf
-
+import open3d as o3d
 import numpy as np
 from tqdm import tqdm
+import cv2
 import argparse
-import open3d as o3d
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
@@ -56,7 +55,6 @@ def convert_range_image_to_point_cloud_labels(frame,
 
 def extract_pc_img(seq_data, scen_dir):
     frame_num = 0
-    device = o3d.core.Device("CPU:0")
 
     # extract frame by frame        
     for data in seq_data:
@@ -84,13 +82,13 @@ def extract_pc_img(seq_data, scen_dir):
         os.makedirs(bin_dir, exist_ok=True)
 
         # save pcd
-        proj_pcd = o3d.t.geometry.PointCloud(device)
-        proj_pcd.point.positions = o3d.core.Tensor(points_all[:,0:3])
+        proj_pcd = o3d.t.geometry.PointCloud()
+        proj_pcd.point["positions"] = o3d.core.Tensor(points_all[:,0:3])
         intensities = np.tanh(points_all[:,3].reshape(-1,1))
-        proj_pcd.point.intensities = o3d.core.Tensor(intensities)
+        proj_pcd.point["intensities"] = o3d.core.Tensor(intensities)
         o3d.t.io.write_point_cloud(os.path.join(lidar_dir,"frame{0:06d}.pcd".format(frame_num)), proj_pcd)
         # save labels
-        np.save(os.path.join(label_dir,"frame{0:06d}.npy".format(frame_num)), point_labels_all)
+        np.save(os.path.join(label_dir,"frame{0:06d}.npy".format(frame_num)), point_labels)
         # save bin
         points_all[:, 3] = np.tanh(points_all[:, 3])
         points_all = points_all.astype(np.float32)
@@ -129,5 +127,9 @@ if __name__ == "__main__":
     
     waymo_root_dir = args.raw_waymo_dir
     split = os.path.join(waymo_root_dir, "training")
-    output_path = os.path.join(waymo_root_dir, "waymo_extracted/training")
+    output_path = os.path.join(waymo_root_dir, "waymo_extracted_test/training")
+    data_extractor(split=split, output_path=output_path)
+
+    split = split = os.path.join(waymo_root_dir, "validation")
+    output_path = os.path.join(waymo_root_dir, "waymo_extracted_test/validation")
     data_extractor(split=split, output_path=output_path)

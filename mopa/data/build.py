@@ -13,8 +13,6 @@ from mopa.data.semantic_kitti.semantic_kitti_dataloader import SemanticKITTISCN
 def build_dataloader(cfg, mode='train', domain='source', start_iteration=0, halve_batch_size=False, force_train=False):
     assert mode in ['train', 'val', 'val_corr', 'test', 'train_labeled', 'train_unlabeled', 'visual']
     dataset_cfg = cfg.get('DATASET_' + domain.upper())
-    if 'Cartin' in dataset_cfg.TYPE:
-        mode = 'val' if mode == 'test' else mode
     split = dataset_cfg[mode.upper()] if not force_train else dataset_cfg['train'.upper()]
     is_train = 'train' in mode
     batch_size = cfg['TRAIN'].BATCH_SIZE if is_train else cfg['VAL'].BATCH_SIZE

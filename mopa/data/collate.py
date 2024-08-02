@@ -8,29 +8,6 @@ import logging
 from torchsparse.utils.collate import sparse_collate
 
 
-def depth_computation(locs):
-    """
-    Custom computation function to transfer point cloud to depth points
-    :param locs: point cloud coord of the shape (N, 3)
-    :return: normalized depth points of the shape (N,1)
-    """
-    # rescale the coords
-    # print(locs.shape)
-    locs = locs / 20
-
-    # compute the depth distance
-    x, y, z = locs[:,0], locs[:,1], locs[:,2]
-    depth = torch.sqrt(x*x + y*y + z*z)
-
-    # utlize L1 normalization
-    # print(depth)
-    depth_max = torch.max(depth, 0)[0]
-    depth_min = torch.min(depth, 0)[0]
-    depth = (depth - depth_min) / (depth_max - depth_min)
-    # print(depth)
-
-    return depth
-
 def inverse_to_all(seg_logit, data_batch):
     # Testing line, will be removed after debugging
     num_point = 0

@@ -15,7 +15,7 @@ $ python mopa/data/a2d2/preprocess.py
 ```
 
 ## 2. NuScenes
-Similar to A2D2, our preprocessing on NuScenes is the same as [xMUDA](https://github.com/valeoai/xmuda), except that we add additional ground extraction for VGI. After downloading the NuScenes dataset from their [website](https://www.nuscenes.org/nuscenes) and decompressing the downloaded data, create a soft link ```ln -sfn /path/to/raw/nuscenes mopa/datasets/nuscenes```, and then run the following command:
+Similar to A2D2, our preprocessing on NuScenes is the same as [xMUDA](https://github.com/valeoai/xmuda), except that we add additional ground extraction for VGI. After download the NuScenes dataset from their [website](https://www.nuscenes.org/nuscenes), create a soft link ```ln -sfn /path/to/raw/nuscenes mopa/datasets/nuscenes```, and then run the following command:
 ```bash
 $ python mopa/data/nuscenes/preprocess.py
 ```
@@ -27,7 +27,7 @@ $ python mopa/data/semantic_kitti/preprocess.py
 ```
 
 ## 4. Rare Objects (ROs) from the wild
-As mentioned in our paper, MoPA mainly leverage labeled instance from the Waymo dataset to imporve segmentation on ROs. To extract those labeled instance, first download the raw dataset from [the official website](https://waymo.com/open/) of Waymo dataset (specifically, we utilize the training split of v1.3.0) and decompress them in the same folder. You now should have a dataset folder organized as follows:
+As mentioned in our paper, MoPA mainly leverage labeled instance from the Waymo dataset to imporve segmentation on ROs. To extract those labeled instance, first download the raw dataset from [the official website](https://waymo.com/open/) of Waymo dataset and decompress them in the same folder (you can download the training split only). You now should have a dataset folder organized as follows:
 
 📦Waymo <br> 
 ┣ 📂training <br>
@@ -35,7 +35,7 @@ As mentioned in our paper, MoPA mainly leverage labeled instance from the Waymo 
 ┃ ┣ 📜segment-yyyyyyy_with_camera_labels.tfrecord  <br>
 ┗ ┗ 📜...  <br>
 
-We recommand you to link the raw Waymo data folder to ```mopa/datasets/waymo``` under this repo. Subsequently, create a isolated conda environment outside the docker container and install the requirements. 
+We recommand you to link the raw Waymo data folder to ```mopa/datasets/waymo``` under this repo. Subsequently, first create a isolated conda environment outside the docker container and install the requirements. 
 ```bash
 $ conda create -n waymo_extract python=3.8
 $ conda activate waymo_extract && pip install -r mopa/data/waymo/requirements.txt
@@ -83,11 +83,9 @@ You can try-out different extraction arguments in ```obj_point_extract.py```. By
 ┗ ┗ ┗ 📂pedestrian <br>
 
 ## 5. Segment Anything Model (SAM) masks
-To utilize SAM masks for dense 2D supervision signals, first download the pretrained SAM model from [their repo](https://github.com/facebookresearch/segment-anything) (we use ```vit_h``` for MoPA in our paper). Then, use the following command to generate SAM mask for NuScenes and SemanticKITTI:
+To utilize SAM masks for dense 2D supervision signals, first download the pretrained SAM model from [their repo](https://github.com/facebookresearch/segment-anything) (we use ```vit-h``` for MoPA in our paper). Then, use the following command to generate SAM mask for NuScenes and SemanticKITTI:
 ```bash
-$ python mopa/data/sam_refine.py \
-$       --model_type vit_h \
-$       --sam_ckpt_pth /path/to/sam/checkpoint
+$ python mopa/data/sam_refine.py --model_type vit-h --sam_ckpt_pth /path/to/sam/checkpoint
 ```
 The generated SAM mask are stored in the sub-directory ```img_mask``` for each dataset. 
 

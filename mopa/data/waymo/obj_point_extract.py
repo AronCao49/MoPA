@@ -10,29 +10,7 @@ from sklearn.cluster import DBSCAN
 from tqdm import tqdm
 from progress.bar import Bar
 
-def debug_visualizer(
-    pc: np.ndarray,
-    save_pth: str,
-    pc_color: np.ndarray = None,
-) -> int:
-    """Function for debug visualization
-
-    Args:
-        pc (np.ndarray): point cloud to be visualized (N, 3)
-        pc_color (np.ndarray): RGB colors [0, 1] of each points (N, 3)
-        save_pth (str): path to save the visualization
-
-    Returns:
-        int: simple return
-    """
-    device = o3d.core.Device("CPU:0")
-    pc_o3d = o3d.t.geometry.PointCloud(device)
-    pc_o3d.point['positions'] = o3d.core.Tensor(pc[:, :3], o3d.core.float32, device)
-    if pc_color is not None:
-        pc_o3d.point['colors'] = o3d.core.Tensor(pc_color, o3d.core.float32, device)
-    o3d.t.io.write_point_cloud(save_pth, pc_o3d)
-    
-    return 0
+from mopa.data.utils.visualize import debug_visualizer
 
 def set_random_seeds(seed=42):
     random.seed(seed)
@@ -94,74 +72,65 @@ def object_point_extraction(
     inst_num_count = [0 for i in range(len(obj_class_id))]
     bar = Bar("Object Extraction", max=(len(obj_class_id) * max_num))
 
-    for split in os.listdir(src_data_dir):
-        split_dir = os.path.join(src_data_dir, split)
-        # pass not-dir file
-        if not os.path.isdir(split_dir):
-            continue
+    for sequence in os.listdir(src_data_dir):
+        seq_dir = os.path.join(src_data_dir, sequence)
+        pc_dir = os.path.join(seq_dir, "bin")         # lidar dir
+        label_dir = os.path.join(seq_dir, "label")      # label dir
         
-        for sequence in os.listdir(split_dir):
-            seq_dir = os.path.join(split_dir, sequence)
-            pc_dir = os.path.join(seq_dir, "bin")         # lidar dir
-            label_dir = os.path.join(seq_dir, "label")      # label dir
-            # pass not-dir file
-            if not os.path.isdir(seq_dir):
+        for pc_file in os.listdir(pc_dir):
+            # skip not-bin file
+            if ".bin" not in pc_file:
                 continue
-            
-            for pc_file in os.listdir(pc_dir):
-                # skip not-bin file
-                if ".bin" not in pc_file:
+
+            pc = np.fromfile(os.path.join(pc_dir, pc_file), dtype=np.float32).reshape(-1, 4)
+            label_file = pc_file.replace('.bin', '.npy')
+            label = np.load(os.path.join(label_dir, label_file)).astype(np.int64)
+
+            for i in range(len(obj_class_id)):
+                # specify class id and name, create dir
+                class_id = obj_class_id[i]
+                class_name = obj_class_name[i]
+                object_dir = os.path.join(save_dir, class_name)
+                if not os.path.exists(object_dir):
+                    os.mkdir(object_dir)
+
+                # filter out samples
+                class_idx = label == class_id
+                class_pc = pc[class_idx, :]
+                if class_pc.shape[0] == 0:
                     continue
+                range_cls_pc = np.sqrt(class_pc[:, 0] * class_pc[:, 0] + \
+                                       class_pc[:, 1] * class_pc[:, 1] + \
+                                       class_pc[:, 2] * class_pc[:, 2] + 0.00001)
 
-                pc = np.fromfile(os.path.join(pc_dir, pc_file), dtype=np.float32).reshape(-1, 4)
-                label_file = pc_file.replace('.bin', '.npy')
-                label = np.load(os.path.join(label_dir, label_file)).astype(np.int64)
+                # DBSCAN clustering
+                inst_cluster = DBSCAN(eps=4, min_samples=5)
+                test_pc = deepcopy(class_pc[:, :3])
+                inst_label = inst_cluster.fit_predict(test_pc)
 
-                for i in range(len(obj_class_id)):
-                    # specify class id and name, create dir
-                    class_id = obj_class_id[i]
-                    class_name = obj_class_name[i]
-                    object_dir = os.path.join(save_dir, class_name)
-                    if not os.path.exists(object_dir):
-                        os.mkdir(object_dir)
-
-                    # filter out samples
-                    class_idx = label == class_id
-                    class_pc = pc[class_idx, :]
-                    if class_pc.shape[0] == 0:
+                # filter out cluster center locate too far
+                inrange_pc = []
+                for inst_id in np.unique(inst_label).tolist():
+                    if inst_num_count[i] >= max_num:    # limit obj num
                         continue
-                    range_cls_pc = np.sqrt(class_pc[:, 0] * class_pc[:, 0] + \
-                                        class_pc[:, 1] * class_pc[:, 1] + \
-                                        class_pc[:, 2] * class_pc[:, 2] + 0.00001)
-
-                    # DBSCAN clustering
-                    inst_cluster = DBSCAN(eps=4, min_samples=5)
-                    test_pc = deepcopy(class_pc[:, :3])
-                    inst_label = inst_cluster.fit_predict(test_pc)
-
-                    # filter out cluster center locate too far
-                    inrange_pc = []
-                    for inst_id in np.unique(inst_label).tolist():
-                        if inst_num_count[i] >= max_num:    # limit obj num
-                            continue
-                        inst_center = np.average(range_cls_pc[inst_label == inst_id])
-                        if inst_center <= max_distance:
-                            inrange_pc = class_pc[inst_label == inst_id, :]
-                            inst_num_count[i] = inst_num_count[i] + 1
-                            # save objects
-                            save_file_pth = os.path.join(
-                                object_dir, 
-                                "{:05d}.bin".format(inst_num_count[i])
-                                )
-                            save_pc = inrange_pc.astype(np.float32)
-                            save_pc.tofile(save_file_pth)
-                            bar.next()
-                    
-                    if sum(inst_num_count) >= len(obj_class_id) * max_num:
-                        bar.finish()
-                        return 0
+                    inst_center = np.average(range_cls_pc[inst_label == inst_id])
+                    if inst_center <= max_distance:
+                        inrange_pc = class_pc[inst_label == inst_id, :]
+                        inst_num_count[i] = inst_num_count[i] + 1
+                        # save objects
+                        save_file_pth = os.path.join(
+                            object_dir, 
+                            "{:05d}.bin".format(inst_num_count[i])
+                            )
+                        save_pc = inrange_pc.astype(np.float32)
+                        save_pc.tofile(save_file_pth)
+                        bar.next()
+                
+                if sum(inst_num_count) >= len(obj_class_id) * max_num:
+                    bar.finish()
+                    return 0
     
-    print(" Object extraction completed!")
+    print("Does not contain enough objects")
     return 0
 
 
@@ -212,7 +181,6 @@ if __name__ == "__main__":
     obj_class_name = ["bicycle", "motorcycle", "pedestrian"]
     
     save_dir = args.obj_save_dir
-    os.makedirs(args.obj_save_dir, exist_ok=True)
     max_num = 1000
     max_distance = 15
 

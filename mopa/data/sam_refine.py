@@ -10,6 +10,9 @@ import matplotlib.pyplot as plt
 from typing import Any, Dict, List, Optional, Tuple
 from torchvision.ops.boxes import batched_nms, box_area
 
+from onnxruntime.quantization import QuantType
+from onnxruntime.quantization.quantize import quantize_dynamic
+
 from segment_anything import (
     sam_model_registry, 
     SamAutomaticMaskGenerator
@@ -34,7 +37,70 @@ def show_points(coords, labels, ax, marker_size=375):
 def show_box(box, ax):
     x0, y0 = box[0], box[1]
     w, h = box[2] - box[0], box[3] - box[1]
-    ax.add_patch(plt.Rectangle((x0, y0), w, h, edgecolor='green', facecolor=(0,0,0,0), lw=2))     
+    ax.add_patch(plt.Rectangle((x0, y0), w, h, edgecolor='green', facecolor=(0,0,0,0), lw=2))  
+    
+def export_sam_onnx(
+    model_type: str,
+    ckpt_pth: str,
+    onnx_pth: str,
+    onnx_qt_pth: str
+):
+    """Function to convert SAM checkpoint to onnx model
+
+    Args:
+        model_type (str): the type of the model
+        ckpt_pth (str): path to the SAM checkpoint
+        onnx_pth (str): path to the saved ONNX model
+        onnx_qt_pth (str): path to the quantized ONNX model
+    """
+    
+    # Load model from the checkpoint
+    sam = sam_model_registry[model_type](checkpoint=ckpt_pth)
+    onnx_model = SamOnnxModel(sam, return_single_mask=True)
+
+    dynamic_axes = {
+        "point_coords": {1: "num_points"},
+        "point_labels": {1: "num_points"},
+    }
+
+    embed_dim = sam.prompt_encoder.embed_dim
+    embed_size = sam.prompt_encoder.image_embedding_size
+    mask_input_size = [4 * x for x in embed_size]
+    dummy_inputs = {
+        "image_embeddings": torch.randn(1, embed_dim, *embed_size, dtype=torch.float),
+        "point_coords": torch.randint(low=0, high=1024, size=(1, 5, 2), dtype=torch.float),
+        "point_labels": torch.randint(low=0, high=4, size=(1, 5), dtype=torch.float),
+        "mask_input": torch.randn(1, 1, *mask_input_size, dtype=torch.float),
+        "has_mask_input": torch.tensor([1], dtype=torch.float),
+        "orig_im_size": torch.tensor([1500, 2250], dtype=torch.float),
+    }
+    output_names = ["masks", "iou_predictions", "low_res_masks"]
+
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=torch.jit.TracerWarning)
+        warnings.filterwarnings("ignore", category=UserWarning)
+        with open(onnx_pth, "wb") as f:
+            torch.onnx.export(
+                onnx_model,
+                tuple(dummy_inputs.values()),
+                f,
+                export_params=True,
+                verbose=True,
+                opset_version=12,
+                do_constant_folding=True,
+                input_names=list(dummy_inputs.keys()),
+                output_names=output_names,
+                dynamic_axes=dynamic_axes,
+            )
+    
+    quantize_dynamic(
+        model_input=onnx_pth,
+        model_output=onnx_qt_pth,
+        optimize_model=True,
+        per_channel=False,
+        reduce_range=False,
+        weight_type=QuantType.QUInt8,
+    )
 
 
 def show_anns(anns: dict):
@@ -141,7 +207,8 @@ def kitti_mask_generator(
         print("Infering sequence: {}".format(seq_dir))
         image_dir = os.path.join(img_dir_prefix, seq_dir, "image_2")
         mask_dir = os.path.join(mask_dir_prefix, seq_dir)
-        os.makedirs(mask_dir, exist_ok=True)
+        if not os.path.exists(mask_dir):
+            os.mkdir(mask_dir)
         images_mask_generator(image_dir, mask_dir, mask_generator)      
 
 def nuscenes_mask_generator(
@@ -186,7 +253,7 @@ def parse_args():
     parser.add_argument('--task', default="MoPA", type=str, help='task name')
     parser.add_argument('--model_type',
                         required=True, 
-                        choices=['vit_h', 'vit_l', 'vit_b'], 
+                        choices=['vit-h', 'vit-l', 'vit-b'], 
                         type=str, help='type of SAM model')
     parser.add_argument('--sam_ckpt_pth',
                         required=True,
@@ -196,10 +263,7 @@ def parse_args():
 
 
 if __name__ == "__main__":
-    # Here we assume that all datasets have their soft link under
-    # the foler mopa/dataset/
-    # If not, you need to adjust the following path prefix
-    args = parse_args()
+    args = parse_args
     
     model_type = args.model_type
     sam_ckpt_pth = args.sam_ckpt_pth

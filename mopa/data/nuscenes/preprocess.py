@@ -176,7 +176,6 @@ def get_nuscenes_ground(root_dir: str, pickle_file: str, save_dir: str):
     # Init PatchWork++
     params = pypatchworkpp.Parameters()
     params.verbose = False
-    params.enable_RNR = False
     PatchworkPP = pypatchworkpp.patchworkpp(params)
     
     # Load pickle file
@@ -212,10 +211,10 @@ if __name__ == '__main__':
     # We construct the splits by using the meta data of NuScenes:
     # USA/Singapore: We check if the location is Boston or Singapore.
     # Day/Night: We detect if "night" occurs in the scene description string.
-    # preprocess(nusc, ['train', 'test'], root_dir, out_dir, location='boston', subset_name='usa')
-    # preprocess(nusc, ['train', 'val', 'test'], root_dir, out_dir, location='singapore', subset_name='singapore')
-    # preprocess(nusc, ['train', 'test'], root_dir, out_dir, keyword='night', keyword_action='exclude', subset_name='day')
-    # preprocess(nusc, ['train', 'val', 'test'], root_dir, out_dir, keyword='night', keyword_action='filter', subset_name='night')
+    preprocess(nusc, ['train', 'test'], root_dir, out_dir, location='boston', subset_name='usa')
+    preprocess(nusc, ['train', 'val', 'test'], root_dir, out_dir, location='singapore', subset_name='singapore')
+    preprocess(nusc, ['train', 'test'], root_dir, out_dir, keyword='night', keyword_action='exclude', subset_name='day')
+    preprocess(nusc, ['train', 'val', 'test'], root_dir, out_dir, keyword='night', keyword_action='filter', subset_name='night')
     
     # g_indices extraction
     get_nuscenes_ground(root_dir, 'mopa/datasets/nuscenes/preprocess/train_night.pkl', 'g_indices')

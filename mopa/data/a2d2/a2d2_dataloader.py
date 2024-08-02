@@ -77,7 +77,29 @@ class A2D2Base(Dataset):
         'Rain dirt'
     ]
 
-    categories = {
+    # use those categories if merge_classes == True
+    categories_l = {
+        'car': ['Car 1', 'Car 2', 'Car 3', 'Car 4', 'Ego car'],
+        'truck': ['Truck 1', 'Truck 2', 'Truck 3'],
+        'bike': ['Bicycle 1', 'Bicycle 2', 'Bicycle 3', 'Bicycle 4', 'Small vehicles 1', 'Small vehicles 2',
+                 'Small vehicles 3'],  # small vehicles are "usually" motorcycles
+        'person': ['Pedestrian 1', 'Pedestrian 2', 'Pedestrian 3'],
+        'road': ['RD normal street', 'Zebra crossing', 'Solid line', 'RD restricted area', 'Slow drive area',
+                 'Drivable cobblestone', 'Dashed line', 'Painted driv. instr.'],
+        'parking': ['Parking area'],
+        'sidewalk': ['Sidewalk', 'Curbstone'],
+        'building': ['Buildings'],
+        'nature': ['Nature object'],
+        'pole': ['Poles'],
+        'other-objects': ['Traffic signal 1', 'Traffic signal 2', 'Traffic signal 3', 'Traffic sign 1',
+                          'Traffic sign 2', 'Traffic sign 3', 'Sidebars', 'Speed bumper', 'Irrelevant signs',
+                          'Road blocks', 'Obstacles / trash', 'Animals', 'Signal corpus', 'Electronic traffic',
+                          'Traffic guide obj.', 'Grid structure'],
+        # 'ignore': ['Sky', 'Utility vehicle 1', 'Utility vehicle 2', 'Tractor', 'Non-drivable street',
+        #            'Blurred area', 'Rain dirt'],
+    }
+
+    categories_s = {
         'car': ['Car 1', 'Car 2', 'Car 3', 'Car 4', 'Ego car'],
         'truck': ['Truck 1', 'Truck 2', 'Truck 3'],
         'bike': ['Bicycle 1', 'Bicycle 2', 'Bicycle 3', 'Bicycle 4', 'Small vehicles 1', 'Small vehicles 2',
@@ -133,10 +155,10 @@ class A2D2Base(Dataset):
         assert self.class_names == list(self.rgb_to_class.values())
         if merge_classes:
             self.label_mapping = -100 * np.ones(len(self.rgb_to_class) + 1, dtype=int)
-            for cat_idx, cat_list in enumerate(self.categories.values()):
+            for cat_idx, cat_list in enumerate(self.categories_s.values()):
                 for class_name in cat_list:
                     self.label_mapping[self.class_names.index(class_name)] = cat_idx
-            self.class_names = list(self.categories.keys())
+            self.class_names = list(self.categories_s.keys())
         else:
             self.label_mapping = None
 
