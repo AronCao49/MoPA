@@ -23,13 +23,13 @@
 
 ## :scroll: About MoPA (ICRA'24)
 
-MoPA is a MM-UDA method that aims to alleviate the imbalanced class-wise performance on Rare Objects (ROs) and the lack of 2D dense supervision signals through Valid Ground-based Insertion (VGI) and Segment Anything Mask consistency (SAM consistency). An overall structure is as follows.
+MoPA is an MM-UDA method that aims to alleviate the imbalanced class-wise performance on Rare Objects (ROs) and the lack of 2D dense supervision signals through Valid Ground-based Insertion (VGI) and Segment Anything Mask consistency (SAM consistency). The overall structure is as follows.
 
 <p align="middle">
   <img src="figs/Main_Method.jpg" width="600" />
 </p>
 
-Specifically, VGI insert more ROs from the wild with ground truth to guide the recognition of ROs during UDA process without introducing artificial artifacts, while SAM consistency leverage image masks from [Segment Anything Model](https://github.com/facebookresearch/segment-anything) to encourage mask-wise prediction consistency.
+Specifically, VGI insert more ROs from the wild with ground truth to guide the recognition of ROs during UDA process without introducing artificial artifacts, while SAM consistency leverages image masks from [Segment Anything Model](https://github.com/facebookresearch/segment-anything) to encourage mask-wise prediction consistency.
 
 <p align="middle">
   <img src="figs/Full_VGI.gif" width="600" />
@@ -39,12 +39,12 @@ Specifically, VGI insert more ROs from the wild with ground truth to guide the r
   <img src="figs/SAM_consistency.jpg" width="600" />
 </p>
 
-## Installation and Prerequistie
+## Installation and Prerequisite
 
 ### 1. Installation
-To ease the effort during environment setup, we recommand you to leverage [Docker](https://www.docker.com/) and [NVIDIA Container Toolkit](https://docs.nvidia.com/ai-enterprise/deployment-guide-vmware/0.1.0/docker.html). With Docker installed, you can either locally build the docker image for MoPA using [this Dockerfile](docker/Dockerfile) by running ```docker build -t mopa docker/ ```, or pull our pre-built image from Dockerhub by ```docker pull aroncao49/mopa:latest```.
+To ease the effort during environment setup, we recommend you leverage [Docker](https://www.docker.com/) and [NVIDIA Container Toolkit](https://docs.nvidia.com/ai-enterprise/deployment-guide-vmware/0.1.0/docker.html). With Docker installed, you can either locally build the docker image for MoPA using [this Dockerfile](docker/Dockerfile) by running ```docker build -t mopa docker/ ```, or pull our pre-built image from Dockerhub by ```docker pull aroncao49/mopa:latest```.
 
-You can then run a container using the docker image. Before running our code in the container, some prerequisties are needed to be installed. To do so, go to this repo folder and run ```bash install.sh```.
+You can then run a container using the docker image. Before running our code in the container, some prerequisites are needed to be installed. To do so, go to this repo folder and run ```bash install.sh```.
 
 Remarks: you may ignore the ERROR warning saying werkzeug version is not compatible with open3d.
 
@@ -106,9 +106,9 @@ Here we provide our pre-trained checkpoints for testing:
 
 **Note**: During our refactoration, we find the same reproduction issue as in the vanilla xMUDA (as in this [issue](https://github.com/valeoai/xmuda/issues/18)), where the performance fluctuates among different runs. This happens much more frequently on NuScenes benchmarks (Day&#8594;Night especially), so we suggest you to use our provided checkpoints for performance validation.
 
-Before conducting training and testing, you are suggested to create or a output directory to capture the logs and checkpoints, and link that folder to ```mopa/exp```.
+Before conducting training and testing, you are suggested to create or an output directory to capture the logs and checkpoints, and link that folder to ```mopa/exp```.
 ### 1. Testing
-To conduct testing on, for example, A2D2&#8594;KITTI, simply download and extract the checkpoints or prepared your own trained networks, and use the following command:
+To conduct testing on, for example, A2D2&#8594;KITTI, simply download and extract the checkpoints or prepare your own trained networks, and use the following command:
 ```bash
 $ CUDA_VISIBLE_DEVICES=0 python mopa/test/test.py \\
       --cfg=configs/a2d2_semantic_kitti/xmuda_pl_pcmm_ema.yaml \\
@@ -116,7 +116,7 @@ $ CUDA_VISIBLE_DEVICES=0 python mopa/test/test.py \\
       --ckpt2d=/2d_checkpoint/name \\
       --ckpt3d=/3d_checkpoint/name \\
 ```
-The class-wise results will be store as *.xls file in your checkpoint folder.
+The class-wise results will be stored as a *.xls file in your checkpoint folder.
 
 To generate pseudo-labels for training, include the extra arguments in the command:
 ```bash
@@ -125,7 +125,7 @@ $ CUDA_VISIBLE_DEVICES=0 python mopa/test/test.py \\
       --pselab_dir=DIR_NAME \\
       VAL.BATCH_SIZE 1 DATASET_TARGET.TEST "('train',)"
 ```
-The pseudo-labels will be store in the folder ```ps_label/DIR_NAME``` under the dataset root dir.
+The pseudo-labels will be stored in the folder ```ps_label/DIR_NAME``` under the dataset root dir.
 
 ### 2. Training
 To conduct training with MoPA on, for example, A2D2&#8594;KITTI, simply use the following command:
@@ -138,8 +138,8 @@ You can also change those arguments in the config files directly.
 
 
 ## :eyes: Updates
-* [2024.08] Our new MM-TTA paper for 3D segmentation is accepted by ECCV 2024! Code will also be released soon. Check our [project site](https://sites.google.com/view/eccv24-latte) for more details!
-* [2024.08] Release training/testing details and all checkpoints. We may further release ROs we extracted if permitted.
+* [2024.08] Our new MM-TTA paper for 3D segmentation has been accepted by ECCV 2024! Code will also be released soon. Check our [project site](https://sites.google.com/view/eccv24-latte) for more details!
+* [2024.08] Release training/testing details and all checkpoints. We may further release the ROs we extracted if permitted.
 * [2024.05] Release installation, prerequisite details, and data preparation procedures.
 * [2024.03] We are now refactoring our code and evaluating its feasibility. Code will be available shortly. 
 * [2024.01] Our paper is accepted by ICRA 2024! Check our paper on arxiv [here](https://arxiv.org/abs/2309.11839).
