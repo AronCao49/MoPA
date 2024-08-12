@@ -18,7 +18,7 @@
 <p align="center"><strong> 
     <a href = "https://arxiv.org/abs/2309.11839">&#128196; [Arxiv]</a> | 
     <a href = "https://youtu.be/kjjzzBdmm9E">&#127916; [Video]</a> |
-    &#128214; [IEEE<i>Xplore</i>]
+    <a href = "https://ieeexplore.ieee.org/abstract/document/10610316/">&#128214; [IEEE<i>Xplore</i>]</a>
 </strong></p>
 
 ## :scroll: About MoPA (ICRA'24)
@@ -144,6 +144,8 @@ You can also change those arguments in the config files directly.
 * [2024.03] We are now refactoring our code and evaluating its feasibility. Code will be available shortly. 
 * [2024.01] Our paper is accepted by ICRA 2024! Check our paper on arxiv [here](https://arxiv.org/abs/2309.11839).
 
+## :envelope: Contact
+For any further questions, please contact [Haozhi Cao](https://sites.google.com/view/haozhicao) (haozhi002@ntu.edu.sg)
 
 ## :clap: Acknowledgement
 We greatly appreciate the contributions of the following public repos:
@@ -155,10 +157,12 @@ We greatly appreciate the contributions of the following public repos:
 
 ## :pencil: Citation
 ```
-@article{cao2023mopa,
+@inproceedings{cao2024mopa,
   title={Mopa: Multi-modal prior aided domain adaptation for 3d semantic segmentation},
   author={Cao, Haozhi and Xu, Yuecong and Yang, Jianfei and Yin, Pengyu and Yuan, Shenghai and Xie, Lihua},
-  journal={arXiv preprint arXiv:2309.11839},
-  year={2023}
+  booktitle={2024 IEEE International Conference on Robotics and Automation (ICRA)},
+  pages={9463--9470},
+  year={2024},
+  organization={IEEE}
 }
 ```
