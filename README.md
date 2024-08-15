@@ -29,7 +29,7 @@ MoPA is an MM-UDA method that aims to alleviate the imbalanced class-wise perfor
   <img src="figs/Main_Method.jpg" width="600" />
 </p>
 
-Specifically, VGI insert more ROs from the wild with ground truth to guide the recognition of ROs during UDA process without introducing artificial artifacts, while SAM consistency leverages image masks from [Segment Anything Model](https://github.com/facebookresearch/segment-anything) to encourage mask-wise prediction consistency.
+Specifically, VGI inserts more ROs from the wild with ground truth to guide the recognition of ROs during UDA process without introducing artificial artifacts, while SAM consistency leverages image masks from [Segment Anything Model](https://github.com/facebookresearch/segment-anything) to encourage mask-wise prediction consistency.
 
 <p align="middle">
   <img src="figs/Full_VGI.gif" width="600" />
@@ -57,7 +57,7 @@ $ git clone https://github.com/url-kaist/patchwork-plusplus
 $ cd patchwork-plusplus && pip install .
 ```
 
-## Dataset Prepatation
+## Dataset Preparation
 Please refer to [DATA_PREPARE.md](mopa/data/DATA_PREPARE.md) for the data preparation and pre-processing details.
 
 ## Training and Testing
