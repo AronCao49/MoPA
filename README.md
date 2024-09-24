@@ -54,7 +54,7 @@ To install [Patchwork++](https://github.com/url-kaist/patchwork-plusplus) for gr
 # Make sure you are in this repo folder
 $ mkdir mopa/third_party && cd mopa/third_party
 $ git clone https://github.com/url-kaist/patchwork-plusplus
-$ cd patchwork-plusplus && pip install .
+$ cd patchwork-plusplus && make pyinstall
 ```
 
 ## Dataset Preparation
