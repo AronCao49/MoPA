@@ -13,5 +13,5 @@ RUN apt-get install g++ build-essential libeigen3-dev python3-pip python3-dev cm
 
 # Install spareseconv & auxiliary libs
 # RUN pip install --upgrade git+https://github.com/facebookresearch/SparseConvNet.git
-RUN pip install --timeout 1000  imageio
+RUN pip install --timeout 1000  imageio open3d
 RUN pip install --timeout 1000  git+https://github.com/facebookresearch/segment-anything.git
