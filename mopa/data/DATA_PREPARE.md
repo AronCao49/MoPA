@@ -37,8 +37,8 @@ As mentioned in our paper, MoPA mainly leverage labeled instance from the Waymo 
 
 We recommand you to link the raw Waymo data folder to ```mopa/datasets/waymo``` under this repo. Subsequently, first create a isolated conda environment outside the docker container and install the requirements. 
 ```bash
-$ conda create -n waymo_extract python=3.8
-$ conda activate waymo_extract && pip install -r mopa/data/waymo/requirements.txt
+$ conda create -n waymo_extract python=3.10
+$ conda activate waymo_extract && python -m pip install -r mopa/data/waymo/requirements.txt
 ```
 Then, use the following command to extract frame-wise data from the *.tfrecord:
 ```bash
