@@ -1,7 +1,7 @@
 <h1 align="center">MoPA: Multi-Modal Prior Aided Domain Adaptation for <br> 3D Semantic Segmentation</h1>
 
 <p align="center"><strong>
-    <a href = "https://sites.google.com/view/haozhicao">Haozhi Cao</a><sup>1</sup>,
+    <a href = "https://aroncao49.github.io/">Haozhi Cao</a><sup>1</sup>,
     <a href = "https://xuyu0010.wixsite.com/xuyu0010">Yuecong Xu</a><sup>2</sup>,
     <a href = "https://marsyang.site/">Jianfei Yang</a><sup>3*</sup>,
     <a href = "https://pamphlett.github.io/">Pengyu Yin</a><sup>1</sup>,
