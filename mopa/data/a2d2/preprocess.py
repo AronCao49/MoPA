@@ -48,7 +48,7 @@ class DummyDataset(Dataset):
     """Use torch dataloader for multiprocessing"""
     def __init__(self, root_dir, scenes):
         self.class_names = A2D2Base.class_names.copy()
-        self.categories = A2D2Base.categories.copy()
+        self.categories = A2D2Base.categories_s.copy()
         self.root_dir = root_dir
         self.data = []
         self.glob_frames(scenes)
@@ -148,7 +148,7 @@ def preprocess(split_name, root_dir, out_dir):
     pkl_data = []
     split = getattr(splits, split_name)
 
-    dataloader = DataLoader(DummyDataset(root_dir, split), num_workers=4)
+    dataloader = DataLoader(DummyDataset(root_dir, split), num_workers=0)
 
     num_skips = 0
     for i, data_dict in enumerate(dataloader):
@@ -194,7 +194,7 @@ def preprocess(split_name, root_dir, out_dir):
 
 
 if __name__ == '__main__':
-    root_dir = 'mopa/datasets/a2d2'
+    root_dir = 'mopa/datasets/a2d2/orig'
     out_dir = 'mopa/datasets/a2d2/preprocess'
     preprocess('test', root_dir, out_dir)
     # split into train1 and train2 to prevent segmentation fault in torch dataloader
